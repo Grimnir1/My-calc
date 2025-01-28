@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .calculator {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            width: 320px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+
+        button {
+            padding: 15px 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #444;
+            color: white;
+            transition: background 0.2s;
+        }
+        #display {
+            width: 100%;
+            height: 60px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 24px;
+            text-align: right;
+            background: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+<body>
+    <div class="calculator" align="center" border="none" width="60%">
+        <input type="text" id="display" readonly>
+
+        <div class="buttons">
+            <button onclick="operation('sqrX')">^</button>
+            <button onclick="operation('sqrt')">√</button>
+            <button onclick="operation('sqr')">^2</button>
+            <button onclick="addOperator('')">🔙</button>
+            <button onclick="clearDisplay()">AC</button>
+
+            <button onclick="operation('log')">log</button>
+            <button onclick="operation('sin')">SIN</button>
+            <button onclick="operation('tan')">TAN</button>
+            <button onclick="operation('cos')">COS</button>
+            <button onclick="operation('%')">Mod</button>
+
+            <button onclick="operation('inv')">1/x</button>
+            <button onclick="appendNumber('(')">(</button>
+            <button onclick="appendNumber(')')">)</button>
+            <button onclick="operation('!')">!</button>
+            <button onclick="addOperator('/')">/</button>
+
+            <button onclick="operation('exp')">Exp</button>
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button  onclick="addOperator('*')">X</button>
+
+            <button onclick="operation('10x')">10^x</button>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="addOperator('-')">-</button>
+
+            <button onclick="operation('')">±</button>
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="addOperator('+')">+</button>
+
+            <button onclick="operation('pi')">π</button>
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button onclick="addOperator('+')">+</button>
+            <button onclick="calculate()">=</button>
+        </div>
+        
+    </div>
+</body>
+
+<script>
+    let currentInput = '';
+    let currentOperation = null;
+    const display = document.getElementById('display');
+
+    function updateDisplay() {
+        display.value = currentInput || '0';
+    }
+    function appendNumber(number) {
+        if (display.value === '0' && number !== '.') {
+            display.value = '';
+        }
+        if (display.value === 'Error') {
+            display.value = '';
+        }
+        display.value += number;
+        currentInput = display.value;
+    }
+
+    function clearDisplay() {
+        currentInput = '';
+        currentOperation = null;
+        updateDisplay();
+    }
+    function addOperator(operator) {
+        // if (currentInput !== '') {
+            currentInput += operator;
+            updateDisplay();
+        // }
+    }
+    function operation(type) {
+    switch(type) {
+        case 'sqrt':
+            currentInput = 'sqrt(' + currentInput;
+            break;
+        case 'sqr':
+            currentInput = '(' + currentInput + ')sqr';
+            break;
+        case 'sin':
+            currentInput = 'sin(' + currentInput;
+            break;
+        case 'cos':
+            currentInput = 'cos(' + currentInput;
+            break;
+        case 'tan':
+            currentInput = 'tan(' + currentInput;
+            break;
+        case 'log':
+            currentInput = 'log(' + currentInput;
+            break;
+        case 'exp':
+            currentInput =   currentInput + 'exp(';
+            break;    
+        case '!':
+            currentInput = currentInput + '!';
+            break;
+        case 'inv':
+            currentInput = '1/(' + currentInput;
+            break;
+        case 'pi':
+            currentInput = Math.PI.toString();
+            break;
+        case '%':
+            currentInput = currentInput + '%';
+            break;
+        
+        default:
+            currentInput += type;
+    }
+    updateDisplay();
+}
+    function calculate() {
+    try {
+        let expression = currentInput;
+        
+        if (expression.includes('sin')) {
+            expression = expression.replace('sin', '');
+            currentInput = Math.sin(eval(expression) * Math.PI / 180).toString();
+        }
+        else if (expression.includes('cos')) {
+            expression = expression.replace('cos', '');
+            currentInput = Math.cos(eval(expression) * Math.PI / 180).toString();
+        }
+        else if (expression.includes('tan')) {
+            expression = expression.replace('tan', '');
+            currentInput = Math.tan(eval(expression) * Math.PI / 180).toString();
+        }
+        else if (expression.includes('log')) {
+            expression = expression.replace('log', '');
+            currentInput = Math.log10(eval(expression)).toString();
+        }
+        else if (expression.includes('!')) {
+            expression = expression.replace('!', '');
+            let num = eval(expression);
+            let factorial = 1;
+            for(let i = 2; i <= num; i++) {
+                factorial *= i;
+            }
+            currentInput = factorial.toString();
+        }else if (expression.includes('sqr')) {
+            expression = expression.replace('sqr', '**2');
+            currentInput = eval(expression).toString();
+        }else if (expression.includes('sqrt')) {
+            expression = expression.replace('sqrt', '');
+            currentInput = Math.sqrt(eval(expression)).toString();
+        }else if (expression.includes('inv')) {
+            expression = expression.replace('inv', '');
+            currentInput = eval(1/expression).toString();
+        }else if (expression.includes('exp')) {
+            expression = expression.replace('exp', '');
+            currentInput = eval(expression).toString();
+        }
+        else {
+            currentInput = eval(expression).toString();
+        }
+        
+        display.value = currentInput;
+
+    } catch (error) {
+        currentInput = 'Error';
+        display.value = 'Error';
+        setTimeout(() => {
+            clearDisplay();
+        }, 1500);
+    }
+}
+</script>
+</html>
